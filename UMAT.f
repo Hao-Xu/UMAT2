@@ -1,4 +1,4 @@
-      SUBROUTINE UMAT(STRESS,STRAN,DSTRAN,
+      SUBROUTINE UMAT(STRESS,STRAN,DSTRAN, 
      X    OMEGA,EPSID,fd0,
      X    PROPS,NTENS)
 C
@@ -48,8 +48,8 @@ C
           STRAN(I)=STRAN(I)
           DSTRAN(I)=DSTRAN(I)
         ELSE
-          STRAN(I)=STRAN(I)/2.D0
-          DSTRAN(I)=DSTRAN(I)/2.D0
+          STRAN(I)=STRAN(I)/1.D0
+          DSTRAN(I)=DSTRAN(I)/1.D0
         ENDIF
       ENDDO
       dstrain=0
@@ -306,8 +306,10 @@ C
           YD1(I)= A1*TRSIGMA**2.D0*E1(I)+A2*SIGSIG(I)+
      1        A3*TRSIGMA*SIGMA(I)+A4*TRSIGSIG*E1(I)
       END DO
+c     write(6,*)' YD1= ', (YD1(I),I=1,NTENS)
 C
       CALL MATP_1(P_1,SIGMA,NTENS)
+c     write(6,*)' P_1= ', P_1
 C
       DO I=1,NTENS
             P_1Y(I)=0.D0
@@ -325,6 +327,8 @@ C
       DO I= 1,NTENS
           SIJ(I) = P_1Y(I)-1.D0/3.D0*TRY*E1(I)
       END DO
+c     write(6,*)' P_1Y= ', (P_1Y(I),I=1,NTENS)
+c     write(6,*)' SIJ= ', (SIJ(I),I=1,NTENS)
 C
       SS=0.
       DO I=1,NTENS
@@ -413,6 +417,7 @@ C
           S(I)=-1.D0
         END IF
       END DO
+c     write (6,*) (S(I),I=1,3)
 C	  
       DO I=1,3
          ANAN1(I)=AN1(I)*AN1(I)
@@ -433,12 +438,17 @@ C
         ANAN2(6)=AN2(3)*AN2(1)
         ANAN3(6)=AN3(3)*AN3(1)
       ENDIF
-        
+    
+c     write(6,*)' ANAN1=',(ANAN1(I),I=1,6)      
+c     write(6,*)' ANAN2=',(ANAN2(I),I=1,6)      
+c     write(6,*)' ANAN3=',(ANAN3(I),I=1,6)      
+  
        DO I=1,NTENS
          DO J=1,NTENS
            P_1(I,J)=S(1)*ANAN1(I)*ANAN1(J)+
      1              S(2)*ANAN2(I)*ANAN2(J)+
      2              S(3)*ANAN3(I)*ANAN3(J)
+c     write(6,*)' P1(',I,',',J,')=',P_1(I,J)      
          END DO
        END DO
      
@@ -523,7 +533,7 @@ C      END DO
       END DO
       DO I=1,3 
         RES=EIGVALR(I)-MIN(EIGVALR(1),EIGVALR(2),EIGVALR(3))
-        write (6,*) 'RES=',RES
+c       write (6,*) 'RES=',RES
         IF (RES.GT.0.0D0) THEN     !CHECK
           S(I)=1.0D0       
         ELSE
@@ -531,7 +541,7 @@ C      END DO
         END IF
         IF (abs(RES)<FTOL) S(I)=0.0D0
       END DO
-        write(6,*)'strss=',EIGVALR(1),' ',EIGVALR(2),' ',EIGVALR(3)
+c       write(6,*)'strss=',EIGVALR(1),' ',EIGVALR(2),' ',EIGVALR(3)
 C	  
       DO I=1,3
          ANAN1(I)=AN1(I)*AN1(I)
